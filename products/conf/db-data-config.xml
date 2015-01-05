@@ -245,7 +245,7 @@
         ON p.brand_id = br.id 
         WHERE 
             p.id LIKE IF('${dataimporter.request.id}', '${dataimporter.request.id}', '%') 
-            AND (p.updated_at + INTERVAL 2 MINUTE) >= IF('${dataimporter.request.updated_at}', IF('${dataimporter.last_index_time}', '${dataimporter.last_index_time}', NOW()), NOW() - INTERVAL 3 YEAR)"
+            AND (p.updated_at + INTERVAL 2 MINUTE) >= IF('${dataimporter.request.updated_at}', '${dataimporter.request.updated_at}', 0)"
          transformer="script:parseData">
         <field column="id" name="id" />
         <field column="name" name="name" />
