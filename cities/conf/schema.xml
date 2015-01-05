@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema name="cities" version="0.1">
+    <fields>
+        <field name="insee_com"    type="string"   indexed="true"  stored="true" multiValued="false" required="true" />
+        <field name="postal_code"  type="string"   indexed="true"  stored="true" multiValued="false" required="true" />
+        <field name="nom_comm"     type="string"   indexed="true"  stored="true" multiValued="false" required="true" />
+        <field name="nom_dept"     type="string"   indexed="false" stored="true" multiValued="false" required="true" />
+        <field name="nom_region"   type="string"   indexed="false" stored="true" multiValued="false" />
+        <field name="statut"       type="string"   indexed="false" stored="true" multiValued="false" />
+        <field name="z_moyen"      type="float"    indexed="false" stored="true" multiValued="false" />
+        <field name="superficie"   type="float"    indexed="false" stored="true" multiValued="false" />
+        <field name="population"   type="float"    indexed="false" stored="true" multiValued="false" />
+        <field name="geo_point_2d" type="location" indexed="false" stored="true" multiValued="false" required="true" />
+        <field name="geo_shape"    type="json"     indexed="false" stored="true" multiValued="false" />
+        <field name="id_geofla"    type="long"     indexed="false" stored="true" multiValued="false" />
+        <field name="code_comm"    type="int"      indexed="false" stored="true" multiValued="false" />
+        <field name="code_cant"    type="int"      indexed="false" stored="true" multiValued="false" />
+        <field name="code_arr"     type="int"      indexed="false" stored="true" multiValued="false" />
+        <field name="code_dept"    type="string"   indexed="false" stored="true" multiValued="false" />
+        <field name="code_reg"     type="int"      indexed="false" stored="true" multiValued="false" />
+
+        <!-- Search field : multivalued, contains city name and postcode -->
+        <field name="city_search" type="city_suggest_edge" indexed="true" stored="false" multiValued="true" />
+
+        <!-- Default search field added to avoid annoying error message -->
+        <field name="text" type="text" indexed="true" stored="false" multiValued="false" />
+
+        <!-- Version field is mandatory -->
+        <field name="_version_" type="long" indexed="true" stored="true" multiValued="false" />
+    </fields>
+
+    <uniqueKey>insee_com</uniqueKey>
+
+    <copyField source="nom_comm" dest="city_search" />
+    <copyField source="postal_code" dest="city_search" />
+    <copyField source="nom_comm" dest="text" />
+
+    <types>
+        <fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true" />
+        <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true" />
+        <fieldType name="int" class="solr.TrieIntField" precisionStep="0" omitNorms="true" positionIncrementGap="0" />
+        <fieldType name="float" class="solr.TrieFloatField" precisionStep="0" omitNorms="true" positionIncrementGap="0" />
+        <fieldType name="long" class="solr.TrieLongField" precisionStep="0" omitNorms="true" positionIncrementGap="0" />
+        <fieldType name="double" class="solr.TrieDoubleField" precisionStep="0" omitNorms="true" positionIncrementGap="0" />
+        <fieldType name="location" class="solr.LatLonType" subFieldSuffix="_coordinate"/>
+        <fieldType name="text" class="solr.TextField" />
+        <fieldtype name="json" class="solr.TextField" positionIncrementGap="100" omitNorms="true" />
+        <fieldType name="city_suggest_edge" class="solr.TextField">
+            <analyzer type="index">
+                <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-ISOLatin1Accent.txt"/>
+                <tokenizer class="solr.PatternTokenizerFactory" pattern="\/" />
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <filter class="solr.PatternReplaceFilterFactory" pattern="^(le |la |les |l')" replacement="" replace="all" />
+                <filter class="solr.PatternReplaceFilterFactory" pattern="([^\w\d])" replacement="" replace="all"/>
+                <filter class="solr.EdgeNGramFilterFactory" maxGramSize="30" minGramSize="1"/>
+            </analyzer>
+            <analyzer type="query">
+                <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-ISOLatin1Accent.txt"/>
+                <tokenizer class="solr.KeywordTokenizerFactory"/>
+                <filter class="solr.LowerCaseFilterFactory"/>
+                <filter class="solr.PatternReplaceFilterFactory" pattern="^(le |la |les |l')" replacement="" replace="all" />
+                <filter class="solr.PatternReplaceFilterFactory" pattern="^(st )" replacement="saint " replace="all" />
+                <filter class="solr.PatternReplaceFilterFactory" pattern="( st )" replacement=" saint " replace="all" />
+                <filter class="solr.PatternReplaceFilterFactory" pattern="([^\w])" replacement="" replace="all"/>
+            </analyzer>
+        </fieldType>
+    </types>
+</schema>

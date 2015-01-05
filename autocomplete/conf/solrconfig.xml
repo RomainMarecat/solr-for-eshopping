@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Licensed to the Apache Software Foundation (ASF) under one or more contributor 
+	license agreements. See the NOTICE file distributed with this work for additional 
+	information regarding copyright ownership. The ASF licenses this file to 
+	You under the Apache License, Version 2.0 (the "License"); you may not use 
+	this file except in compliance with the License. You may obtain a copy of 
+	the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required 
+	by applicable law or agreed to in writing, software distributed under the 
+	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
+	OF ANY KIND, either express or implied. See the License for the specific 
+	language governing permissions and limitations under the License. -->
+
+<!-- This is a stripped down config file used for a simple example... It 
+	is *not* a good example to work from. -->
+<config>
+	<luceneMatchVersion>4.6</luceneMatchVersion>
+
+	<!-- France Labs -->
+	<lib dir="./lib" />
+
+	<!-- The DirectoryFactory to use for indexes. solr.StandardDirectoryFactory, 
+		the default, is filesystem based. solr.RAMDirectoryFactory is memory based, 
+		not persistent, and doesn't work with replication. -->
+	<directoryFactory name="DirectoryFactory"
+		class="${solr.directoryFactory:solr.StandardDirectoryFactory}" />
+
+	<dataDir>${solr.core0.data.dir:}</dataDir>
+
+	<!-- To enable dynamic schema REST APIs, use the following for <schemaFactory>: 
+		<schemaFactory class="ManagedIndexSchemaFactory"> <bool name="mutable">true</bool> 
+		<str name="managedSchemaResourceName">managed-schema</str> </schemaFactory> 
+		When ManagedIndexSchemaFactory is specified, Solr will load the schema from 
+		he resource named in 'managedSchemaResourceName', rather than from schema.xml. 
+		Note that the managed schema resource CANNOT be named schema.xml. If the 
+		managed schema does not exist, Solr will create it after reading schema.xml, 
+		then rename 'schema.xml' to 'schema.xml.bak'. Do NOT hand edit the managed 
+		schema - external modifications will be ignored and overwritten as a result 
+		of schema modification REST API calls. When ManagedIndexSchemaFactory is 
+		specified with mutable = true, schema modification REST API calls will be 
+		allowed; otherwise, error responses will be sent back for these requests. -->
+	<schemaFactory class="ClassicIndexSchemaFactory" />
+
+	<updateHandler class="solr.DirectUpdateHandler2">
+		<updateLog>
+			<str name="dir">${solr.core0.data.dir:}</str>
+		</updateLog>
+	</updateHandler>
+
+
+	<!-- France Labs -->
+	<requestHandler name="/dataimport"
+		class="org.apache.solr.handler.dataimport.DataImportHandler">
+		<lst name="defaults">
+
+			<str name="update.chain">autocomplete</str>
+			<str name="config">solr-data-config.xml</str>
+		</lst>
+	</requestHandler>
+
+
+
+	<requestHandler name="/select" class="solr.StandardRequestHandler">
+		<lst name="defaults">
+			<str name="defType">edismax</str>
+			<str name="rows">4</str>
+			<str name="fl">textsuggest</str>
+			<str name="qf">textsuggest^300 textng^500 textnge^5000 keywordsng</str>
+			<!--<str name="fq">type:product_name AND (availability:product.mailorder.available OR _query_:"{!geofilt}")</str>
+			<str name="sfield">coordinate</str>	
+			<int name="d">50</int>-->	
+		</lst>
+	</requestHandler>
+
+	<!-- France Labs -->
+<requestHandler name="/autocomplete"
+		class="com.francelabs.plugins.AutocompleteRequestHandler">
+		<lst name="defaults">
+			<!--  Common parameters  -->
+			<str name="common.fl">textsuggest,image,ref_id,link,routing,city_expanded,price,special_price</str>
+			<str name="common.wt">json</str>
+			<str name="common.defType">edismax</str>
+			<str name="common.qf">textsuggest^300 textng^500 textnge^10000 keywordsng</str>	
+			<str name="common.sfield">coordinate</str>	
+			<int name="common.d">50</int>
+			<!-- Product name -->
+			<str name="subquery">product_name</str>
+			<str name="product_name.rows">4</str>
+			<str name="product_name.fq">type:product_name</str>
+			<!-- remove geofilt for webtostore products -->
+			<!--<str name="product_name.fq">availability:product.mailorder.available OR _query_:"{!geofilt}"</str>-->
+			<str name="product_name.boost">recip(geodist(),2,200,20)</str>
+			<!-- Shop name -->
+			<str name="subquery">shop_name</str>
+			<str name="shop_name.rows">2</str>
+			<str name="shop_name.fq">type:shop_name</str>
+			<str name="shop_name.boost">recip(geodist(),2,200,20)</str>
+			<!-- Product category -->
+			<str name="subquery">product_category</str>
+			<str name="product_category.fq">type:product_category</str>
+			<str name="product_category.boost">count</str>
+			<str name="product_category.rows">2</str>
+			<!-- Shop category -->
+			<str name="subquery">shop_category</str>
+			<str name="shop_category.fq">type:shop_category</str>
+			<str name="shop_category.boost">count</str>
+			<str name="shop_category.rows">2</str>
+			 <!-- Mag -->
+                        <str name="subquery">mag</str>
+                        <str name="mag.fq">type:mag</str>
+                        <str name="mag.sort">pubDate desc</str>
+                        <str name="mag.rows">2</str>
+			
+		</lst>
+	</requestHandler>
+
+
+
+	<requestHandler name="/replication" class="solr.ReplicationHandler"
+		startup="lazy" />
+
+
+
+	<requestHandler name="/test" class="solr.StandardRequestHandler">
+		<lst name="defaults">
+			<str name="defType">edismax</str>
+			<str name="rows">10</str>
+			<str name="qf">textsuggest^30 textng^50.0 textnge^500.0 phonetic^10
+			</str>
+		</lst>
+	</requestHandler>
+
+	<requestHandler name="/analysis/field" startup="lazy"
+		class="solr.FieldAnalysisRequestHandler" />
+	<requestHandler name="/update" class="solr.UpdateRequestHandler" />
+
+	<updateRequestProcessorChain name="autocomplete">
+		<processor
+			class="org.apache.solr.update.processor.SignatureUpdateProcessorFactory">
+			<bool name="enabled">true</bool>
+			<bool name="overwriteDupes">false</bool>
+			<str name="signatureField">id</str>
+			<str name="fields">textsuggest,type</str>
+			<str name="signatureClass">org.apache.solr.update.processor.Lookup3Signature</str>
+		</processor>
+		<processor
+			class="com.francelabs.plugins.AutocompleteUpdateProcessorFactory">
+		</processor>
+		<processor class="solr.LogUpdateProcessorFactory" />
+		<processor class="solr.RunUpdateProcessorFactory" />
+	</updateRequestProcessorChain>
+
+
+	<requestHandler name="/admin/"
+		class="org.apache.solr.handler.admin.AdminHandlers" />
+
+	<requestHandler name="/admin/ping" class="solr.PingRequestHandler">
+		<lst name="invariants">
+			<str name="q">solrpingquery</str>
+		</lst>
+		<lst name="defaults">
+			<str name="echoParams">all</str>
+		</lst>
+	</requestHandler>
+
+	<!-- config for the admin interface -->
+	<admin>
+		<defaultQuery>solr</defaultQuery>
+	</admin>
+
+</config>
+

@@ -1,0 +1,20 @@
+<dataConfig>
+    <dataSource type="URLDataSource" />
+    <document>
+        <entity name="slashdot"
+                pk="link"
+                url="http://rss.slashdot.org/Slashdot/slashdot"
+                processor="XPathEntityProcessor"
+                forEach="/rss/channel/item"
+                transformer="DateFormatTransformer">
+				
+			
+            <field column="title" xpath="/rss/channel/item/title" />
+            <field column="description" xpath="/rss/channel/item/description" />
+            <field column="content" xpath="/rss/channel/item/creator" />
+            <field column="pubDate" xpath="/rss/channel/item/date" dateTimeFormat="EEE, dd MMM yyyy HH:mm:ss" />
+           
+        </entity>
+    </document>
+</dataConfig>
+

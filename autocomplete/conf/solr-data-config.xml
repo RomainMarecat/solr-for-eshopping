@@ -1,0 +1,29 @@
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+  
+
+  
+<dataConfig>
+  <document>
+    <entity name="product_name" processor="SolrEntityProcessor" url="http://localhost:1050/solr/products" query="saleable:true" fl="ref_id:id,textsuggest:name,availability,keywords,coordinate,image,type:'product_name',keywords,routing,city_expanded,price,special_price,old_version:_version_" wt="javabin" />
+    <entity name="product_category" processor="SolrEntityProcessor" url="http://localhost:1050/solr/products" query="saleable:true" fl="ref_id:category_ids,textsuggest:category,type:'product_category',keywords,old_version:_version_" wt="javabin" />
+    <entity name="shop_name" processor="SolrEntityProcessor" url="http://localhost:1050/solr/organisations" query="*:*" fl="ref_id:id,textsuggest:name,thumbnail_url,type:'shop_name',keywords,routing,town,old_version:_version_" wt="javabin" />
+    <entity name="shop_category" processor="SolrEntityProcessor" url="http://localhost:1050/solr/organisations" query="*:*" fl="ref_id:category_ids,textsuggest:category,type:'shop_category',keywords,old_version:_version_" wt="javabin" />
+    <entity name="mag" processor="SolrEntityProcessor" url="http://localhost:1050/solr/mag" query="*:*" fl="ref_id:id,type:'mag',textsuggest:title,link,pubDate,old_version:_version_" wt="javabin" />
+
+ </document>
+</dataConfig>

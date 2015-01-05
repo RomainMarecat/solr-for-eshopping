@@ -1,0 +1,21 @@
+<dataConfig>
+    <dataSource type="URLDataSource" />
+    <document>
+        <entity name="lemag"
+                pk="link"
+                url="http://tootici-lemag.cleonet.fr/?feed=rss2"
+                processor="XPathEntityProcessor"
+                forEach="/rss/channel/item"
+                transformer="DateFormatTransformer">					
+ 
+            <field column="title" xpath="/rss/channel/item/title" />
+            <field column="description" xpath="/rss/channel/item/description" />
+            <field column="content" xpath="/rss/channel/item/content:encoded" />
+	    <field column="title" xpath="/rss/channel/item/title" />
+	    <field column="link" xpath="/rss/channel/item/link" />
+	    <field column="pubDate" xpath="/rss/channel/item/pubDate" dateTimeFormat="EEE, dd MMM YYYY, HH:mm:ss" />
+   
+ </entity>
+    </document>
+</dataConfig>
+
