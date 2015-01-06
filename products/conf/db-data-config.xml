@@ -215,7 +215,7 @@
             ss.idShop AS shops
         FROM 
             product AS p 
-        INNER JOIN 
+        JOIN 
             (
             SELECT  
                 v1.*, MIN(v1.price) minprice
