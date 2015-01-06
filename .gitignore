@@ -1,3 +1,5 @@
 products/conf/dataimport.properties
 products/data/index/
 products/data/tlog/
+organisations/data/
+news/data/
