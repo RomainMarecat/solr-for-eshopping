@@ -28,6 +28,8 @@
 
     <core name="cities" instanceDir="cities"/>
 
+    <core config="solrconfig.xml" name="document" instanceDir="document" schema="schema.xml" dataDir="data"/>
+
     <core config="solrconfig.xml" name="mag" instanceDir="mag" schema="schema.xml" dataDir="data"/>
 
     <core name="news" instanceDir="news/"/>

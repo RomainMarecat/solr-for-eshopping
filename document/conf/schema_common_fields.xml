@@ -1,0 +1,9 @@
+        <field name="name_nostem" type="text_fr_nostem" indexed="true" stored="false" multiValued="false" />
+        <field name="name_phonetic" type="text_fr_phonetic" indexed="true" stored="false" multiValued="false" />
+        <field name="name_synonym" type="text_fr_synonym" indexed="true" stored="false" multiValued="false" />
+
+    	<copyField source="name" dest="name_nostem"/>
+    	<copyField source="name" dest="name_phonetic"/>
+    	<copyField source="name" dest="name_synonym"/>
+       
+
