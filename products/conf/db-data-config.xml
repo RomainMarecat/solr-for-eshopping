@@ -1,221 +1,31 @@
 <dataConfig>
   <dataSource name="db" type="JdbcDataSource" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost/romainmarecat_symfony" user="romainmarecat" password="romainmarecat" readonly="true"/>
 
- <script>
-    <![CDATA[
-    function parseData(row)
-    {
-        setPrice(row);
-        setSolrRouting(row);
-        setSolrCityExpanded(row);
-        setSolrCategory(row);
-        setSolrCategoryPath(row);
-        setSolrCategoryIds(row);
-        setSolrImageUrl(row);
-        setSolrStock(row);
-        setSolrAvailability(row);
-        setSpecialPrice(row);
-        setSolrDiscountRate(row);
-        setSolrSpecialPriceFromDate(row);
-
-        return row;
-    }
-
-    function setSolrStock(row)
-    {
-        var stock = row.get('stock');
-        if (stock > 0) {
-            row.put('stock', "in.stock");
-        } else {
-            row.put('stock', "out.stock");
-        }
-
-        return row;
-    }
-
-    function setSolrAvailability(row)
-    {
-        var availability = [];
-        var available_for_mail_order = row.get('available_for_mail_order');
-        var available_in_my_shop = row.get('available_in_my_shop');
-        row.put('availability', null);
-
-        if (available_for_mail_order == 1) {
-            availability.push("product.mailorder.available");
-        } else if (available_in_my_shop == 1 && available_for_mail_order == 0) {
-            availability.push("product.inmyshop.available");
-        }
-        row.put('availability', availability);
-
-        return row;
-    }
-
-    function setSpecialPrice(row)
-    {
-        var special_price = row.get('special_price');
-        if (special_price == null) {
-            row.put('special_price', null);  
-            row.put('special_price_from_date', null);  
-            row.put('special_price_variant_id', null);
-        }
-        return row;
-    }
-
-    function setSolrDiscountRate(row)
-    {
-        var special_price = row.get('special_price');
-        var price = row.get('price');
-        if (special_price > 0) {
-            var discount_rate = -(special_price / price) + 1;
-        } else {
-            var discount_rate = null;
-        }
-        row.put('discount_rate', discount_rate);  
-
-        return row;
-    }
-
-    function setSolrSpecialPriceFromDate(row)
-    {
-        var special_price_from_date = row.get('special_price_from_date');
-        if (special_price_from_date == null) {
-            row.put('special_price_from_date', null);  
-        }
-        return row;
-    }
-
-    function setSolrRouting(row) 
-    { 
-        var slug = row.get('slug');
-        routing = '{\"route\":\"product_show\",\"params\":{\"slug\":\"' + slug + '\"}}';
-        row.put('slug', routing);
-
-        return row;
-    }
-
-    function setPrice(row) 
-    { 
-        var price = row.get('price');
-        if (price != null) {
-            row.put('price', price);
-        } else {
-            row.put('price', 0);
-        }
-
-        return row;
-    }
-
-    function setSolrCityExpanded(row)
-    {
-        var cityExpanded = "";
-        var city = row.get('city');
-        var postcode = row.get('postcode');
-        postcode = postcode.substring(0,2);
-        cityExpanded = city + " (" + postcode + ")";
-        row.put('postcode', cityExpanded);
-
-        return row;
-    }
-
-    function setSolrCategory(row)
-    {
-        var array = [];
-        var category = row.get('category');
-        var lvl = row.get('lvl');
-
-        if (lvl == 1) {
-            var category_title = row.get('category_title');
-            array.push(category_title);
-            row.put('category', array);
-
-            return row;
-        }
-
-        array.push(category);
-        row.put('category', array);
-
-        return row;
-    }
-
-    function setSolrCategoryPath(row)
-    {
-        var array = [];
-        var category = row.get('category');
-        var category_title = row.get('category_title');
-        var category_ids = row.get('category_ids');
-        var lvl = row.get('lvl');
-
-        if (lvl == 1) {
-            var category_title = row.get('category_title');
-            array.push(category_title);
-            row.put('category_title', array);
-
-            return row;
-        }
-
-        if (category_ids != null){
-            var json = JSON.parse(category_ids);
-            for(var i = 0; i < json.length; i++){
-                if (i == 0){
-                    array.push(json[i] + " > " + category_title);
-                } else {
-                    array.push(json[i] + " > " + json[i-1] + " > " + category_title);
-                }
-            }
-        }
-
-        array.push(category_title);
-        row.put('category_title', array);
-
-        return row;
-    }
-
-    function setSolrCategoryIds(row)
-    {
-        var category_ids = row.get('category_ids');
-        var lvl = row.get('lvl');
-        if (lvl == 1) {
-            var category_id = row.get('category_id');
-            row.put('category_ids', category_id);
-
-            return row;
-        }
-        var json = JSON.parse(category_ids);
-        row.put('category_ids', json);
-
-        return row;
-    }
-
-    function setSolrImageUrl(row)
-    {
-        var gallery = row.get('image');
-        var json = JSON.parse(gallery);
-        if (json.images[0] != null){
-            var image = json.images[0].original;
-        } else {
-            var image = json.images[0];
-        }
-        row.put('image', image);
-
-        return row;
-    }
-
-]]>
-  </script>
-  <document>
+  <document name="products">
     <entity dataSource="db" pk="p.id" name="product" query="
-        SELECT 
-            p.id, p.name, p.keywords, p.anchor as brand, p.description AS content, p.gallery AS image, p.status, p.is_saleable as saleable, 
-            p.available_for_mail_order, p.available_in_my_shop, p.slug AS slug,
-            v.ean, v.sku, v.price, v.stock, v.special_price AS special_price, v.id AS special_price_variant_id, 
-            pc.category_id,
-            cat.title AS category, cat.title AS category_title, cat.lvl, cat.id as category_id, cat.parent_id,
-            cat.children_ids AS children_ids, cat.parent_ids AS category_ids,
-            util_loc.city, util_loc.postcode, util_loc.latitude, util_loc.longitude, CONCAT(util_loc.latitude, ',', util_loc.longitude) AS coordinate, br.name,
-            ss.idShop AS shops
+        SELECT            
+            p.id as id, p.name, p.keywords, br.name AS brand, v.ean, v.price, 
+            routing_parser(p.slug) AS routing, v.sku AS reference,
+            util_loc.city AS town,
+            city_expanded_parser(util_loc.city, util_loc.postcode) AS city_expanded,
+            coordinate_parser(util_loc.latitude, util_loc.longitude) AS coordinate,
+            cat.title AS category,
+            p.description AS content,
+            image_url_parser(p.gallery) AS image,
+            p.is_visible, p.is_saleable as saleable, 
+            stock_parser(v.stock), 
+            v.price,
+            p.available_for_mail_order,
+            p.available_in_my_shop,
+            ss.idShop AS shops,
+            v.special_price AS special_price, v.id AS special_price_variant_id, 
+            discount_rate_parser(special_price, v.price) as discount_rate,
+            v.special_price_from_date,
+            v.special_price_to_date,
+            cat.id AS product_category_id
         FROM 
             product AS p 
-        JOIN 
+        INNER JOIN 
             (
             SELECT  
                 v1.*, MIN(v1.price) minprice
@@ -225,63 +35,65 @@
                 v1.product_id
         ) AS v
             ON p.id = v.product_id AND v.price = minprice
-        JOIN 
+        LEFT JOIN 
             products_categories AS pc
             ON p.id = pc.product_id
-        JOIN 
+        LEFT JOIN 
             category AS cat
             ON pc.category_id = cat.id
-        JOIN     
+        LEFT JOIN     
             products_shops AS ps
             ON p.id = ps.product_id
-        JOIN 
+        LEFT JOIN 
             shop_shop AS ss
             ON ps.shop_id = ss.idShop
-        JOIN 
+        LEFT JOIN 
             util_location AS util_loc
             ON ss.idLocation = util_loc.idLocation
-        JOIN 
+        LEFT JOIN 
             brand AS br
-        ON p.brand_id = br.id 
-        WHERE 
-            p.id LIKE IF('${dataimporter.request.id}', '${dataimporter.request.id}', '%') 
-            AND (p.updated_at + INTERVAL 2 MINUTE) >= IF('${dataimporter.request.updated_at}', '${dataimporter.request.updated_at}', 0)"
-         transformer="script:parseData">
+            ON p.brand_id = br.id      
+">
+        <!--  
+            WHERE p.id = IF('${dataimporter.request.id}', '${dataimporter.request.id}', '%')
+            AND (p.updated_at + INTERVAL 2 MINUTE) >= IF('${dataimporter.request.updated_at}', '${dataimporter.request.updated_at}', 0) -->
         <field column="id" name="id" />
         <field column="name" name="name" />
         <field column="keywords" name="keywords "/>
         <field column="brand" name="brand" />
         <field column="ean" name="ean" />
         <field column="price" name="price" />
-        <field column="slug" name="routing"  />        
+        <field column="routing" name="routing"  />        
         <field column="sku" name="reference"/>
         <field column="city" name="town"/>
-        <field column="postcode" name="city_expanded"/>
+        <field column="city_expanded" name="city_expanded"/>
         <field column="coordinate" name="coordinate"/>
-        <field column="category" name="category"/>  
-        <field column="category_ids" name="category_ids"/>              
+        <field column="category" name="category"/>   
         <field column="content" name="content" />
         <field column="image" name="image" />
-        <field column="status" name="status" />
+        <field column="is_visible" name="status" />
         <field column="saleable" name="saleable"/>
         <field column="stock" name="stock" />
-        <field column="availability" name="availability" />
         <field column="shops" name="shops" />
         <field column="special_price" name="special_price" />
         <field column="special_price_variant_id" name="special_price_variant_id" />
         <field column="special_price_from_date" name="special_price_from_date" />
+        <field column="special_price_to_date" name="special_price_to_date" />
         <field column="discount_rate" name="discount_rate" />
-
-        <entity name="category"  query="
-        SELECT 
-           category.title as category_title, category.id, category.lvl
-        FROM 
-           category as category
-        WHERE 
-            category.id = ${product.parent_id}
-        ">
-            <field column="category_title" name="category_path"/>
-        </entity>
+        <entity name="availability" dataSource="db" pk="id" query="
+                SELECT available_for_mail_order_parser(available_for_mail_order) as availability FROM product WHERE id ='${product.id}' UNION ALL SELECT available_in_my_shop_parser(available_in_my_shop) as availability FROM product WHERE id ='${product.id}'">
+            <field column="availability" name="availability" />
+        </entity>       
+        <entity name="nav_categories" dataSource="db" pk="id" query="
+                    SELECT solr.navigation_path, solr.navigation_ids, solr.navigation, solr.category_ids, solr.category_path
+                    FROM solr_dataimport AS solr 
+                    WHERE solr.category_id = IF('${product.product_category_id}', '${product.product_category_id}', NULL)">
+            <field column="category_ids" name="category_ids"/>
+            <field column="category_path" name="category_path"/>
+            <field column="navigation" name="navigation"/>
+            <field column="navigation_ids" name="navigation_ids" />
+            <field column="navigation_path" name="navigation_path" />
+        </entity> 
     </entity>
   </document>
 </dataConfig>

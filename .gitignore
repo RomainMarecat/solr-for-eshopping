@@ -1,5 +1,9 @@
 products/conf/dataimport.properties
-products/data/index/
-products/data/tlog/
+products/data/
 organisations/data/
 news/data/
+mag/data/
+cities/data/
+autocomplete/data/
+document/data/
+

@@ -1,11 +1,11 @@
 <dataConfig>
-  <dataSource name="db" type="JdbcDataSource" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost/v3_document" user="romainmarecat" password="romainmarecat" readonly="true"/>
+  <dataSource name="db" type="JdbcDataSource" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost/romainmarecat_documents" user="romainmarecat" password="romainmarecat" readonly="true"/>
   <document>
     <entity dataSource="db" name="document" query="
         SELECT * FROM document">
         <field column="id" name="id" />
         <field column="name" name="name" />
-        <field column="keywords" name="keywords "/>
+        <field column="keywords" name="keywords"/>
         <field column="slug" name="slug"  />        
         <field column="description" name="description" />
     </entity>

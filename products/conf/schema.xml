@@ -44,6 +44,7 @@
         <field name="publication_date" type="date" indexed="true" stored="true" multiValued="false" required="false" />
         <field name="special_price" type="float" indexed="false" stored="true" multiValued="false" required="false" />
         <field name="special_price_from_date" type="date" indexed="false" stored="true" multiValued="false" required="false" />
+        <field name="special_price_to_date" type="date" indexed="false" stored="true" multiValued="false" required="false" />
         <field name="special_price_variant_id" type="string" indexed="false" stored="true" multiValued="false" required="false" />
         <field name="discount_rate" type="float" indexed="true" stored="true" multiValued="false" required="false" />
 

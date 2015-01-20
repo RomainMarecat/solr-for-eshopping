@@ -64,6 +64,11 @@
   <requestHandler name="/select" class="solr.StandardRequestHandler">
         <lst name="defaults">
         </lst>
+        <str name="df">id</str>
+        <str name="df">name</str>
+        <str name="df">slug</str>
+        <str name="df">keywords</str>
+        <str name="df">description</str>
   </requestHandler>
 
   <!-- realtime get handler, guaranteed to return the latest stored fields 
