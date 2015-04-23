@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<schema name="news" version="0.1">
+<schema name="autocomplete" version="0.1">
     <fields>		<!-- AutoComplete fields
 		     Construct documents containing these fields for all suggestions you like to provide
 		     Then use a dismax query to search on some fields, display some fields and boost others
