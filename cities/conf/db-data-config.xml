@@ -1,0 +1,28 @@
+<dataConfig>
+  <dataSource name="db" type="JdbcDataSource" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost/romainmarecat_symfony" user="romainmarecat" password="romainmarecat" readonly="true"/>
+
+    <document name="products">
+        <entity dataSource="db" pk="c.id" name="cities" query="
+            SELECT * 
+            FROM cities
+            ">
+           <field column="insee_com" name="insee_com" />
+           <field column="postal_code" name="postal_code" />
+           <field column="nom_comm" name="nom_comm" />
+           <field column="nom_dept" name="nom_dept" />
+           <field column="nom_region" name="nom_region" />
+           <field column="statut" name="statut" />
+           <field column="z_moyen" name="z_moyen" />
+           <field column="superficie" name="superficie" />
+           <field column="population" name="population" />
+           <field column="geo_point_2d" name="geo_point_2d" />
+           <field column="geo_shape" name="geo_shape" />
+           <field column="id_geofla" name="id_geofla" />
+           <field column="code_comm" name="code_comm" />
+           <field column="code_cant" name="code_cant" />
+           <field column="code_arr" name="code_arr" />
+           <field column="code_dept" name="code_dept" />
+           <field column="code_reg" name="code_reg" />
+        </entity>
+    </document>
+</dataConfig>

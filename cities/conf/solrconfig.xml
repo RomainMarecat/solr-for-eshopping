@@ -111,6 +111,13 @@
       <str name="echoParams">all</str>
     </lst>
   </requestHandler>
+
+  <requestHandler name="/dataimport" class="org.apache.solr.handler.dataimport.DataImportHandler">
+    <lst name="defaults">
+        <str name="config">db-data-config.xml</str>
+        <str name="clean">false</str>
+    </lst>
+  </requestHandler>
    
   <!-- config for the admin interface --> 
   <admin>
