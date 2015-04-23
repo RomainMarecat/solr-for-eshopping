@@ -1,0 +1,16 @@
+# Set of French contractions for ElisionFilter
+# TODO: load this as a resource from the analyzer and sync it in build.xml
+l
+m
+n
+t
+qu
+n
+s
+j
+d
+c
+jusqu
+quoiqu
+lorsqu
+puisqu
