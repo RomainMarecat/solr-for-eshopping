@@ -92,7 +92,7 @@
 			<!-- Shop name -->
 			<str name="subquery">shop_name</str>
 			<str name="shop_name.rows">2</str>
-			<str name="shop_name.fq">type:shop_edgytext</str>
+			<str name="shop_name.fq">type:shop_name</str>
 			<str name="shop_name.boost">recip(geodist(),2,200,20)</str>
 			<!-- Product category -->
 			<str name="subquery">product_category</str>
