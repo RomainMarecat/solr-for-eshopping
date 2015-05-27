@@ -70,14 +70,14 @@
 	<lst name="defaults">
 		&common_select_products_params;
 		<str name="sfield">coordinate</str>
-		<str name="fq">availability:product.inmyshop.available</str>
+		<str name="fq">status:true</str>
 		<str name="boost">recip(geodist(),2,200,20)</str>
 	</lst>
   </requestHandler>
 
   <requestHandler name="/select_mailorder" class="solr.StandardRequestHandler">
 	<lst name="defaults">
-		<str name="fq">availability:product.mailorder.available</str>
+		<str name="fq">status:true</str>
 		&common_select_products_params;
 	</lst>
   </requestHandler>

@@ -4,7 +4,7 @@
                 <tokenizer class="solr.StandardTokenizerFactory"/>
                 <filter class="solr.LowerCaseFilterFactory"/>
                 <!-- removes l', etc -->
-                <filter class="solr.ElisionFilterFactory" ignoreCase="true" articles="lang/contractions_fr.txt"/>
+                <filter class="solr.ElisionFilterFactory" ignoreCase="true" articles="lang/elisionwords_fr.txt"/>
                 <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_fr.txt" format="snowball" />
                 <filter class="solr.ASCIIFoldingFilterFactory"/>
                 <filter class="solr.SnowballPorterFilterFactory" language="French"/>
@@ -13,7 +13,7 @@
                 <tokenizer class="solr.StandardTokenizerFactory"/>
                 <filter class="solr.LowerCaseFilterFactory"/>
                 <!-- removes l', etc -->
-                <filter class="solr.ElisionFilterFactory" ignoreCase="true" articles="lang/contractions_fr.txt"/>
+                <filter class="solr.ElisionFilterFactory" ignoreCase="true" articles="lang/elisionwords_fr.txt"/>
                 <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_fr.txt" format="snowball" />
                 <filter class="solr.ASCIIFoldingFilterFactory"/>
                 <filter class="solr.SnowballPorterFilterFactory" language="French" />
@@ -25,19 +25,17 @@
                 <tokenizer class="solr.StandardTokenizerFactory"/>
                 <filter class="solr.LowerCaseFilterFactory"/>
                 <!-- removes l', etc -->
-                <filter class="solr.ElisionFilterFactory" ignoreCase="true" articles="lang/contractions_fr.txt"/>
+                <filter class="solr.ElisionFilterFactory" ignoreCase="true" articles="lang/elisionwords_fr.txt"/>
                 <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_fr.txt" format="snowball" />
                 <filter class="solr.ASCIIFoldingFilterFactory"/>
            
 	 </analyzer>
 </fieldType>
-        
-        
         <fieldType name="text_fr_synonym" class="solr.TextField" positionIncrementGap="100">
             <analyzer type="index">
                 <tokenizer class="solr.WhitespaceTokenizerFactory"/>
                 <filter class="solr.LowerCaseFilterFactory"/>
-                <filter class="solr.ElisionFilterFactory" ignoreCase="true" articles="lang/contractions_fr.txt"/>
+                <filter class="solr.ElisionFilterFactory" ignoreCase="true" articles="lang/elisionwords_fr.txt"/>
                 <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_fr.txt" format="snowball" />
                 <filter class="solr.ASCIIFoldingFilterFactory"/>
                 <filter class="solr.SnowballPorterFilterFactory" language="French" />
@@ -47,7 +45,7 @@
             <analyzer type="query">
                 <tokenizer class="solr.WhitespaceTokenizerFactory"/>
                 <filter class="solr.LowerCaseFilterFactory"/>
-                <filter class="solr.ElisionFilterFactory" ignoreCase="true" articles="lang/contractions_fr.txt"/>
+                <filter class="solr.ElisionFilterFactory" ignoreCase="true" articles="lang/elisionwords_fr.txt"/>
                 <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_fr.txt" format="snowball" />
                 <filter class="solr.ASCIIFoldingFilterFactory"/>
                 <filter class="solr.SnowballPorterFilterFactory" language="French" />
@@ -60,7 +58,7 @@
                 <tokenizer class="solr.StandardTokenizerFactory"/>
                 <filter class="solr.LowerCaseFilterFactory"/>
                 <!-- removes l', etc -->
-                <filter class="solr.ElisionFilterFactory" ignoreCase="true" articles="lang/contractions_fr.txt"/>
+                <filter class="solr.ElisionFilterFactory" ignoreCase="true" articles="lang/elisionwords_fr.txt"/>
                 <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_fr.txt" format="snowball" />
                 <filter class="solr.BeiderMorseFilterFactory" nameType="GENERIC" ruleType="APPROX" concat="true" languageSet="french"/>
             </analyzer>

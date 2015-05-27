@@ -1,24 +1,24 @@
-        <field name="name_nostem" type="text_fr_nostem" indexed="true" stored="false" multiValued="false" />
-        <field name="name_phonetic" type="text_fr_phonetic" indexed="true" stored="false" multiValued="false" />
-        <field name="name_synonym" type="text_fr_synonym" indexed="true" stored="false" multiValued="false" />
-	
-	<field name="category_nostem" type="text_fr_nostem" indexed="true" stored="false" multiValued="true" />
-        <field name="category_phonetic" type="text_fr_phonetic" indexed="true" stored="false" multiValued="true" />
-        <field name="category_synonym" type="text_fr_synonym" indexed="true" stored="false" multiValued="true" />
+    <field name="name_nostem" type="text_fr_nostem" indexed="true" stored="false" multiValued="false" />
+    <field name="name_phonetic" type="text_fr_phonetic" indexed="true" stored="false" multiValued="false" />
+    <field name="name_synonym" type="text_fr_synonym" indexed="true" stored="false" multiValued="false" />
 
-	<field name="content_nostem" type="text_fr_nostem" indexed="true" stored="false" multiValued="false" />
-        <field name="content_phonetic" type="text_fr_phonetic" indexed="true" stored="false" multiValued="false" />
-        <field name="content_synonym" type="text_fr_synonym" indexed="true" stored="false" multiValued="false" />
+    <field name="category_nostem" type="text_fr_nostem" indexed="true" stored="false" multiValued="true" />
+    <field name="category_phonetic" type="text_fr_phonetic" indexed="true" stored="false" multiValued="true" />
+    <field name="category_synonym" type="text_fr_synonym" indexed="true" stored="false" multiValued="true" />
 
-    	<copyField source="name" dest="name_nostem"/>
-    	<copyField source="name" dest="name_phonetic"/>
-    	<copyField source="name" dest="name_synonym"/>
-       
-	<copyField source="category_path" dest="category_nostem"/>
-        <copyField source="category_path" dest="category_phonetic"/>
-        <copyField source="category_path" dest="category_synonym"/>
-        
-        <copyField source="content" dest="content_nostem"/>
-        <copyField source="content" dest="content_phonetic"/>
-        <copyField source="content" dest="content_synonym"/>
+    <field name="content_nostem" type="text_fr_nostem" indexed="true" stored="false" multiValued="false" />
+    <field name="content_phonetic" type="text_fr_phonetic" indexed="true" stored="false" multiValued="false" />
+    <field name="content_synonym" type="text_fr_synonym" indexed="true" stored="false" multiValued="false" />
+<!-- 
+    <copyField source="name" dest="name_nostem"/>
+    <copyField source="name" dest="name_phonetic"/>
+    <copyField source="name" dest="name_synonym"/>
 
+    <copyField source="category" dest="category_nostem"/>
+    <copyField source="category" dest="category_phonetic"/>
+    <copyField source="category" dest="category_synonym"/>
+
+    <copyField source="content" dest="content_nostem"/>
+    <copyField source="content" dest="content_phonetic"/>
+    <copyField source="content" dest="content_synonym"/>
+ -->

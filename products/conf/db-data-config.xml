@@ -2,9 +2,9 @@
   <dataSource name="db" type="JdbcDataSource" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost/romainmarecat_symfony" user="romainmarecat" password="romainmarecat" readonly="true"/>
 
   <document name="products">
-    <entity dataSource="db" pk="p.id" name="product" query="
+    <entity dataSource="db" pk="p.id" transformer="RegexTransformer" name="product" query="
         SELECT            
-            p.id as id, p.name, concat(p.keywords, ', ', coalesce(v.value,'')) as keywords, br.name AS brand, v.ean, v.price,
+            p.id as id, p.name, CONCAT_WS(',', v.ean, p.keywords) as keywords, CONCAT_WS(',', v.value) as properties, br.name AS brand, v.ean, v.price,
             CONCAT(&quot;{\&quot;route\&quot;:\&quot;product_show\&quot;,\&quot;params\&quot;:{\&quot;slug\&quot;:\&quot;&quot;, p.slug, &quot;\&quot;}}&quot;) AS routing, 
             v.sku AS reference,
             util_loc.city AS town, 
@@ -21,8 +21,6 @@
             ss.idShop AS shops,
             v.special_price,
             p.published_from as publication_date,
-            p.available_for_mail_order,
-            p.available_in_my_shop,
             IF (v.special_price IS NOT NULL, v.id, NULL) AS special_price_variant_id,
             IF (v.special_price IS NOT NULL, discount_rate_parser(v.special_price, v.price), NULL) AS discount_rate,
             IF (v.special_price IS NOT NULL, v.special_price_from_date, NULL) AS special_price_from_date,
@@ -33,7 +31,7 @@
          INNER JOIN 
             (
             SELECT  
-                v1.*, MIN(v1.price) minprice, GROUP_CONCAT(DISTINCT vp.value ) as value
+                v1.*, MIN(v1.price) minprice, GROUP_CONCAT(vp.value) as value
             FROM    
                 variant AS v1
             LEFT JOIN
@@ -61,17 +59,21 @@
         LEFT JOIN 
             brand AS br
             ON p.brand_id = br.id
+        ORDER BY p.id ASC
         ">
+        <!-- CONCAT_WS(',', available_in_my_shop_parser(p.available_in_my_shop), available_for_mail_order_parser(p.available_for_mail_order)) as availability, -->
+        <!--             ORDER BY p.id DESC
+            LIMIT 10 -->
         <!--  
             WHERE p.id = IF('${dataimporter.request.id}', '${dataimporter.request.id}', '%')
             AND (p.updated_at + INTERVAL 2 MINUTE) >= IF('${dataimporter.request.updated_at}', '${dataimporter.request.updated_at}', 0) -->
         <field column="id" name="id" />
         <field column="name" name="name" />
-        <field column="keywords" name="keywords"/>
+        <field column="keywords" name="keywords" splitBy=","/>
         <field column="brand" name="brand" />
         <field column="ean" name="ean" />
         <field column="price" name="price" />
-        <field column="routing" name="routing"  />        
+        <field column="routing" name="routing" />        
         <field column="sku" name="reference"/>
         <field column="city" name="town"/>
         <field column="city_expanded" name="city_expanded"/>
@@ -83,26 +85,29 @@
         <field column="publication_date" name="publication_date" />      
         <field column="stock" name="stock" />
         <field column="shops" name="shops" />
+        <field column="properties" name="properties" splitBy=","/>
         <field column="special_price" name="special_price" />
         <field column="special_price_variant_id" name="special_price_variant_id" />
         <field column="special_price_from_date" name="special_price_from_date" />
         <field column="special_price_to_date" name="special_price_to_date" />
         <field column="discount_rate" name="discount_rate" />
-        <entity name="availability" dataSource="db" pk="id" query="
-                SELECT available_for_mail_order_parser(available_for_mail_order) as availability 
-                FROM product 
-                WHERE id ='${product.id}'  
-                UNION ALL 
-                SELECT available_in_my_shop_parser(available_in_my_shop) as availability 
-                FROM product 
-                WHERE id ='${product.id}'">
-            <field column="availability" name="availability" />
-        </entity>       
-        <entity name="nav_categories" dataSource="db" pk="id" query="
-                    SELECT NULL AS navigation_path, solr2.navigation_ids, NULL AS navigation, NULL AS category_ids, NULL AS category_path
-                    FROM navigations_categories_dataimport AS solr2
-                    WHERE solr2.id = 1
-                    UNION ALL 
+        <!-- <field column="availability" name="availability" splitBy="," /> -->
+        <entity name="category" transformer="RegexTransformer" dataSource="db" pk="id" query="
+                SELECT CONCAT_WS(',', c1.id, json_parent_ids_parser(c1.parent_ids)) AS category_parent_ids, CONCAT_WS(',', c1.id, json_parent_ids_parser(c1.parent_ids)) AS source_category_parent_ids
+                FROM products_categories AS pc1
+                LEFT JOIN category AS c1 ON c1.id = pc1.category_id
+                WHERE pc1.product_id ='${product.id}'">
+            <field column="category_parent_ids" name="category_parent_ids" splitBy="," />
+            <entity name="navigation" transformer="RegexTransformer" dataSource="db" pk="id" query="
+                    SELECT CONCAT_WS(',', n1.id, np1.navigation_id, json_parent_ids_parser(n1.parent_ids)) AS navigation_parent_ids
+                    FROM navigations_categories AS nc1
+                    LEFT JOIN navigation AS n1 ON n1.id = nc1.navigation_id AND n1.lvl > 0
+                    LEFT JOIN navigations_products AS np1 ON np1.product_id = '${product.id}' 
+                    WHERE nc1.category_id IN ( ${category.source_category_parent_ids} )">
+                <field column="navigation_parent_ids" name="navigation_parent_ids" splitBy="," />
+            </entity>
+        </entity>
+        <!-- <entity name="nav_categories" dataSource="db" pk="id" query="
                     SELECT solr.navigation_path, solr.navigation_ids, solr.navigation, solr.category_ids, solr.category_path
                     FROM navigations_categories_dataimport AS solr
                     WHERE solr.category_id = IF('${product.product_category_id}', '${product.product_category_id}', NULL)
@@ -120,9 +125,9 @@
             <field column="category_ids" name="category_ids"/>
             <field column="category_path" name="category_path"/>
             <field column="navigation" name="navigation"/>
-            <field column="navigation_ids" name="navigation_ids" />
+            <field column="navigation_ids" name="navigation_ids"/>
             <field column="navigation_path" name="navigation_path" />
-        </entity> 
+        </entity> -->
     </entity>
   </document>
 </dataConfig>
