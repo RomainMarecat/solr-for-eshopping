@@ -1,70 +1,67 @@
 <dataConfig>
-  <dataSource name="db" type="JdbcDataSource" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost/romainmarecat_symfony" user="romainmarecat" password="romainmarecat" readonly="true"/>
+  <dataSource name="db" type="JdbcDataSource" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost/romainmarecat_symfony?characterEncoding=utf8" user="romainmarecat" password="romainmarecat" readonly="true" encoding="UTF-8"
+        URIEncoding="UTF-8"/>
 
   <document name="products">
     <entity dataSource="db" pk="p.id" transformer="RegexTransformer" name="product" query="
-        SELECT            
+        SELECT
             p.id as id, p.name, CONCAT_WS(',', v.ean, p.keywords) as keywords, CONCAT_WS(',', v.value) as properties, br.name AS brand, v.ean, v.price,
-            CONCAT(&quot;{\&quot;route\&quot;:\&quot;product_show\&quot;,\&quot;params\&quot;:{\&quot;slug\&quot;:\&quot;&quot;, p.slug, &quot;\&quot;}}&quot;) AS routing, 
+            CONCAT(&quot;{\&quot;route\&quot;:\&quot;product_show\&quot;,\&quot;params\&quot;:{\&quot;slug\&quot;:\&quot;&quot;, p.slug, &quot;\&quot;}}&quot;) AS routing,
             v.sku AS reference,
-            util_loc.city AS town, 
-            CONCAT(CONCAT(util_loc.city, CONCAT(&quot; (&quot;, SUBSTRING(util_loc.postcode, 1, 2))), &quot;)&quot;) AS city_expanded, 
+            util_loc.city AS town,
+            CONCAT(CONCAT(util_loc.city, CONCAT(&quot; (&quot;, SUBSTRING(util_loc.postcode, 1, 2))), &quot;)&quot;) AS city_expanded,
             CONCAT(util_loc.latitude, &quot;,&quot;, util_loc.longitude) AS coordinate,
             cat.title AS category,
             p.description AS content,
             CONCAT(&quot;/uploads/&quot;, REPLACE(REPLACE(SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(p.gallery, &quot;:&quot;,3),&quot;:&quot;,-1), &quot;,&quot;,1), &quot;\&quot;&quot;, &quot;&quot;), &quot;\\/&quot;, &quot;\/&quot;)) AS image,
             p.is_visible,
-            stock_parser(v.stock), 
+            stock_parser(v.stock),
             v.price,
             p.available_for_mail_order,
             p.available_in_my_shop,
             ss.idShop AS shops,
             v.special_price,
-            p.published_from as publication_date,
+            IF (COALESCE(p.published_from, '0000-00-00 00:00:00') != '0000-00-00 00:00:00', p.published_from, NULL) as publication_date,
             IF (v.special_price IS NOT NULL, v.id, NULL) AS special_price_variant_id,
             IF (v.special_price IS NOT NULL, discount_rate_parser(v.special_price, v.price), NULL) AS discount_rate,
-            IF (v.special_price IS NOT NULL, v.special_price_from_date, NULL) AS special_price_from_date,
-            IF (v.special_price IS NOT NULL, v.special_price_to_date, NULL) AS special_price_to_date,
+            IF (v.special_price IS NOT NULL AND v.special_price_from_date != '0000-00-00 00:00:00', v.special_price_from_date, NULL) AS special_price_from_date,
+            IF (v.special_price IS NOT NULL AND v.special_price_to_date != '0000-00-00 00:00:00', v.special_price_to_date, NULL) AS special_price_to_date,
             cat.id AS product_category_id
-        FROM 
-            product AS p 
-         INNER JOIN 
+        FROM
+            product AS p
+         INNER JOIN
             (
-            SELECT  
+            SELECT
                 v1.*, MIN(v1.price) minprice, GROUP_CONCAT(vp.value) as value
-            FROM    
+            FROM
                 variant AS v1
             LEFT JOIN
-                variants_properties as vp 
+                variants_properties as vp
                 ON v1.id = vp.variant_id
-            GROUP BY 
+            GROUP BY
                 v1.product_id
         ) AS v
             ON p.id = v.product_id AND v.price = minprice
-        LEFT JOIN 
+        LEFT JOIN
             products_categories AS pc
             ON p.id = pc.product_id
-        LEFT JOIN 
+        LEFT JOIN
             category AS cat
             ON pc.category_id = cat.id
-        LEFT JOIN     
+        LEFT JOIN
             products_shops AS ps
             ON p.id = ps.product_id
-        LEFT JOIN 
+        LEFT JOIN
             shop_shop AS ss
             ON ps.shop_id = ss.idShop
-        LEFT JOIN 
+        LEFT JOIN
             util_location AS util_loc
             ON ss.idLocation = util_loc.idLocation
-        LEFT JOIN 
+        LEFT JOIN
             brand AS br
             ON p.brand_id = br.id
-        ORDER BY p.id ASC
         ">
-        <!-- CONCAT_WS(',', available_in_my_shop_parser(p.available_in_my_shop), available_for_mail_order_parser(p.available_for_mail_order)) as availability, -->
-        <!--             ORDER BY p.id DESC
-            LIMIT 10 -->
-        <!--  
+        <!--
             WHERE p.id = IF('${dataimporter.request.id}', '${dataimporter.request.id}', '%')
             AND (p.updated_at + INTERVAL 2 MINUTE) >= IF('${dataimporter.request.updated_at}', '${dataimporter.request.updated_at}', 0) -->
         <field column="id" name="id" />
@@ -73,16 +70,16 @@
         <field column="brand" name="brand" />
         <field column="ean" name="ean" />
         <field column="price" name="price" />
-        <field column="routing" name="routing" />        
+        <field column="routing" name="routing" />
         <field column="sku" name="reference"/>
         <field column="city" name="town"/>
         <field column="city_expanded" name="city_expanded"/>
         <field column="coordinate" name="coordinate"/>
-        <field column="category" name="category"/>   
+        <field column="category" name="category"/>
         <field column="content" name="content" />
-        <field column="image" name="image" />
+        <field column="image" name="image"/>
         <field column="is_visible" name="status" />
-        <field column="publication_date" name="publication_date" />      
+        <field column="publication_date" name="publication_date" />
         <field column="stock" name="stock" />
         <field column="shops" name="shops" />
         <field column="properties" name="properties" splitBy=","/>
@@ -91,7 +88,6 @@
         <field column="special_price_from_date" name="special_price_from_date" />
         <field column="special_price_to_date" name="special_price_to_date" />
         <field column="discount_rate" name="discount_rate" />
-        <!-- <field column="availability" name="availability" splitBy="," /> -->
         <entity name="category" transformer="RegexTransformer" dataSource="db" pk="id" query="
                 SELECT CONCAT_WS(',', c1.id, json_parent_ids_parser(c1.parent_ids)) AS category_parent_ids, CONCAT_WS(',', c1.id, json_parent_ids_parser(c1.parent_ids)) AS source_category_parent_ids
                 FROM products_categories AS pc1
@@ -102,32 +98,11 @@
                     SELECT CONCAT_WS(',', n1.id, np1.navigation_id, json_parent_ids_parser(n1.parent_ids)) AS navigation_parent_ids
                     FROM navigations_categories AS nc1
                     LEFT JOIN navigation AS n1 ON n1.id = nc1.navigation_id AND n1.lvl > 0
-                    LEFT JOIN navigations_products AS np1 ON np1.product_id = '${product.id}' 
+                    LEFT JOIN navigations_products AS np1 ON np1.product_id = '${product.id}'
                     WHERE nc1.category_id IN ( ${category.source_category_parent_ids} )">
                 <field column="navigation_parent_ids" name="navigation_parent_ids" splitBy="," />
             </entity>
         </entity>
-        <!-- <entity name="nav_categories" dataSource="db" pk="id" query="
-                    SELECT solr.navigation_path, solr.navigation_ids, solr.navigation, solr.category_ids, solr.category_path
-                    FROM navigations_categories_dataimport AS solr
-                    WHERE solr.category_id = IF('${product.product_category_id}', '${product.product_category_id}', NULL)
-                    UNION ALL
-                    SELECT IF(n1.id is not null AND n1.lvl>0, CONCAT_WS(' > ', n6.label, n5.label, n4.label, n3.label, n2.label, n1.label), NULL) AS navigation_path, n1.id AS navigation_ids, n1.label AS navigation, null AS  category_ids, null as category_path
-                    FROM navigations_products AS np
-                    LEFT JOIN navigation AS n1 ON n1.id = np.navigation_id AND n1.lvl > 0
-                    LEFT JOIN navigation AS n2 ON n2.id = n1.parent_id AND n2.lvl > 0
-                    LEFT JOIN navigation AS n3 ON n3.id = n2.parent_id AND n3.lvl > 0
-                    LEFT JOIN navigation AS n4 ON n4.id = n3.parent_id AND n4.lvl > 0
-                    LEFT JOIN navigation AS n5 ON n5.id = n4.parent_id AND n5.lvl > 0
-                    LEFT JOIN navigation AS n6 ON n6.id = n5.parent_id AND n6.lvl > 0    
-                    WHERE np.product_id = IF('${product.id}', '${product.id}', NULL)
-                    ">
-            <field column="category_ids" name="category_ids"/>
-            <field column="category_path" name="category_path"/>
-            <field column="navigation" name="navigation"/>
-            <field column="navigation_ids" name="navigation_ids"/>
-            <field column="navigation_path" name="navigation_path" />
-        </entity> -->
     </entity>
   </document>
 </dataConfig>
