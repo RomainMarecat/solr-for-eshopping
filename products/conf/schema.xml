@@ -26,17 +26,17 @@
         <field name="coordinate" type="location" indexed="true" stored="true" multiValued="false" />
         <field name="reference" type="string" indexed="true" stored="true" multiValued="false" />
         <field name="content" type="text_fr" indexed="true" stored="true" multiValued="false" />
-        <!-- 
+        <!--
         <field name="category_ids" type="string" indexed="true" stored="true" multiValued="true" omitNorms="true" />
         <field name="category_path" type="string" indexed="true" stored="true" multiValued="true" omitNorms="true" />
         <field name="category_path_str" type="text_fr" indexed="true" stored="true" multiValued="true" omitNorms="true" />
     -->
         <field name="category_parent_ids" type="string" indexed="true" stored="true" multiValued="true" omitNorms="true" />
-        <!--        
+        <!--
         <field name="navigation" type="text_fr" indexed="true" stored="true" multiValued="true" required="false"/>
         <field name="navigation_ids" type="string" indexed="true" stored="true" multiValued="true" omitNorms="true" />
         <field name="navigation_path" type="string" indexed="true" stored="true" multiValued="true" omitNorms="true" />
-        <field name="navigation_path_str" type="text_fr" indexed="true" stored="true" multiValued="true" omitNorms="true" /> 
+        <field name="navigation_path_str" type="text_fr" indexed="true" stored="true" multiValued="true" omitNorms="true" />
     -->
         <field name="navigation_parent_ids" type="string" indexed="true" stored="true" multiValued="true" omitNorms="true" />
 
@@ -45,14 +45,14 @@
         <field name="stock" type="string" indexed="true" stored="true" multiValued="false" />
     <!--
         <field name="availability" type="string" indexed="true" stored="true" multiValued="true" />
-    -->        
+    -->
         <field name="shops" type="string" indexed="true" stored="true" multiValued="true" />
         <field name="properties" type="string" indexed="true" stored="true" multiValued="true" omitNorms="true" required="false" />
 
         <field name="publication_date" type="date" indexed="true" stored="true" multiValued="false" required="false" />
-        <field name="special_price" type="float" indexed="false" stored="true" multiValued="false" required="false" />
-        <field name="special_price_from_date" type="date" indexed="false" stored="true" multiValued="false" required="false" />
-        <field name="special_price_to_date" type="date" indexed="false" stored="true" multiValued="false" required="false" />
+        <field name="special_price" type="float" indexed="true" stored="true" multiValued="false" required="false" />
+        <field name="special_price_from_date" type="date" indexed="true" stored="true" multiValued="false" required="false" />
+        <field name="special_price_to_date" type="date" indexed="true" stored="true" multiValued="false" required="false" />
         <field name="special_price_variant_id" type="string" indexed="false" stored="true" multiValued="false" required="false" />
         <field name="discount_rate" type="float" indexed="true" stored="true" multiValued="false" required="false" />
 
@@ -85,7 +85,8 @@
     <uniqueKey>id</uniqueKey>
 
     <copyField source="brand" dest="brand_str"/>
-    <!--     
+    <copyField source="name" dest="alpha_only_sort" indexed="true" stored="false" required="false" multivalued="false"/>
+    <!--
     <copyField source="category_path" dest="category_path_str"/>
     <copyField source="navigation_path" dest="navigation_path_str"/> -->
 

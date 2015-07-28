@@ -95,12 +95,18 @@
                 WHERE pc1.product_id ='${product.id}'">
             <field column="category_parent_ids" name="category_parent_ids" splitBy="," />
             <entity name="navigation" transformer="RegexTransformer" dataSource="db" pk="id" query="
-                    SELECT CONCAT_WS(',', n1.id, np1.navigation_id, json_parent_ids_parser(n1.parent_ids)) AS navigation_parent_ids
+                    SELECT CONCAT_WS(',', n1.id, np1.navigation_id, n1.parent_id) AS navigation_parent_ids, n1.parent_id as parent_id
                     FROM navigations_categories AS nc1
                     LEFT JOIN navigation AS n1 ON n1.id = nc1.navigation_id AND n1.lvl > 0
                     LEFT JOIN navigations_products AS np1 ON np1.product_id = '${product.id}'
                     WHERE nc1.category_id IN ( ${category.source_category_parent_ids} )">
                 <field column="navigation_parent_ids" name="navigation_parent_ids" splitBy="," />
+                <entity name="navigation_n2" transformer="RegexTransformer" dataSource="db" pk="id" query="
+                    SELECT IF (json_parent_ids_parser(n2.parent_ids) != '', json_parent_ids_parser(n2.parent_ids), NULL) AS navigation_parent_ids
+                    FROM navigation n2
+                    WHERE n2.id = '${navigation.parent_id}' AND n2.lvl > 0">
+                    <field column="navigation_parent_ids" name="navigation_parent_ids" splitBy="," />
+                </entity>
             </entity>
         </entity>
     </entity>
