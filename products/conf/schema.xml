@@ -14,6 +14,7 @@
 
         <!-- attribute fields -->
         <field name="name" type="text_fr" indexed="true" stored="true" multiValued="false" />
+        <field name="slug" type="text_fr" indexed="true" stored="true" multiValued="false" />
         <field name="town" type="text_fr" indexed="true" stored="true" multiValued="false" required="false" />
         <field name="city_expanded" type="text_fr" indexed="true" stored="true" multiValued="false" required="false" />
         <field name="category" type="text_fr" indexed="true" stored="true" multiValued="true" required="false"/>
@@ -63,6 +64,7 @@
         <field name="textSpell" type="text_ws" indexed="true" multiValued="true" omitNorms="true" />
         <field name="textSearch" type="edgytext" indexed="true" multiValued="true" omitNorms="true" omitTermFreqAndPositions="true" />
         <field name="textSearchText" type="text_ws" indexed="true" multiValued="true" omitNorms="true" omitTermFreqAndPositions="true" />
+        <field name="alpha_slug_only_sort" type="string" indexed="true" stored="false" required="false" multiValued="false"/>
 
         <!--Dynamic attributes fields -->
         <dynamicField name="*_int" type="int" indexed="true" stored="true" multiValued="false" />
@@ -84,8 +86,8 @@
     -->
     <uniqueKey>id</uniqueKey>
 
-    <copyField source="brand" dest="brand_str"/>
-    <copyField source="name" dest="alpha_only_sort" indexed="true" stored="false" required="false" multivalued="false"/>
+    <copyField source="brand" dest="brand_str" />
+    <copyField source="slug" dest="alpha_slug_only_sort" />
     <!--
     <copyField source="category_path" dest="category_path_str"/>
     <copyField source="navigation_path" dest="navigation_path_str"/> -->

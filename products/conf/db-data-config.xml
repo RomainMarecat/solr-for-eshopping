@@ -5,7 +5,7 @@
   <document name="products">
     <entity dataSource="db" pk="p.id" transformer="RegexTransformer" name="product" query="
         SELECT
-            p.id as id, p.name, CONCAT_WS(',', v.ean, p.keywords) as keywords, CONCAT_WS(',', v.value) as properties, br.name AS brand, v.ean, v.price,
+            p.id as id, p.name, p.slug, CONCAT_WS(',', v.ean, p.keywords) as keywords, CONCAT_WS(',', v.value) as properties, br.name AS brand, v.ean, v.price,
             CONCAT(&quot;{\&quot;route\&quot;:\&quot;product_show\&quot;,\&quot;params\&quot;:{\&quot;slug\&quot;:\&quot;&quot;, p.slug, &quot;\&quot;}}&quot;) AS routing,
             v.sku AS reference,
             util_loc.city AS town,
@@ -66,6 +66,7 @@
             AND (p.updated_at + INTERVAL 2 MINUTE) >= IF('${dataimporter.request.updated_at}', '${dataimporter.request.updated_at}', 0) -->
         <field column="id" name="id" />
         <field column="name" name="name" />
+        <field column="slug" name="slug" />
         <field column="keywords" name="keywords" splitBy=","/>
         <field column="brand" name="brand" />
         <field column="ean" name="ean" />
