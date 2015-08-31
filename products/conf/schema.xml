@@ -24,6 +24,7 @@
         <field name="ean" type="text_keyword" indexed="true" stored="false" multiValued="true" omitNorms="true" />
         <field name="thumbnail_url" type="string" indexed="false" stored="true" multiValued="false" />
         <field name="price" type="float" indexed="true" stored="true" multiValued="false" />
+        <field name="price_sort_index" type="sfloat" indexed="true" stored="true" multiValued="false" />
         <field name="coordinate" type="location" indexed="true" stored="true" multiValued="false" />
         <field name="reference" type="string" indexed="true" stored="true" multiValued="false" />
         <field name="content" type="text_fr" indexed="true" stored="true" multiValued="false" />
@@ -65,6 +66,7 @@
         <field name="textSearch" type="edgytext" indexed="true" multiValued="true" omitNorms="true" omitTermFreqAndPositions="true" />
         <field name="textSearchText" type="text_ws" indexed="true" multiValued="true" omitNorms="true" omitTermFreqAndPositions="true" />
         <field name="alpha_slug_only_sort" type="string" indexed="true" stored="false" required="false" multiValued="false"/>
+        <field name="alpha_price_only_sort" type="sfloat" indexed="true" stored="false" required="false" multiValued="false"/>
 
         <!--Dynamic attributes fields -->
         <dynamicField name="*_int" type="int" indexed="true" stored="true" multiValued="false" />
@@ -88,6 +90,7 @@
 
     <copyField source="brand" dest="brand_str" />
     <copyField source="slug" dest="alpha_slug_only_sort" />
+    <copyField source="price_sort_index" dest="alpha_price_only_sort" />
     <!--
     <copyField source="category_path" dest="category_path_str"/>
     <copyField source="navigation_path" dest="navigation_path_str"/> -->

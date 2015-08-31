@@ -16,6 +16,7 @@
             CONCAT(&quot;/uploads/&quot;, REPLACE(REPLACE(SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(p.gallery, &quot;:&quot;,3),&quot;:&quot;,-1), &quot;,&quot;,1), &quot;\&quot;&quot;, &quot;&quot;), &quot;\\/&quot;, &quot;\/&quot;)) AS image,
             p.is_visible,
             stock_parser(v.stock),
+            select_price_sort_index(v.special_price, v.price, v.special_price_from_date, v.special_price_to_date) as price_sort_index,
             v.price,
             p.available_for_mail_order,
             p.available_in_my_shop,
@@ -71,6 +72,7 @@
         <field column="brand" name="brand" />
         <field column="ean" name="ean" />
         <field column="price" name="price" />
+        <field column="price_sort_index" name="price_sort_index" />
         <field column="routing" name="routing" />
         <field column="sku" name="reference"/>
         <field column="city" name="town"/>
