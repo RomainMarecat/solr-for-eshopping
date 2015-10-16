@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE schema [
+        <!ENTITY common_select_organisations_params SYSTEM "common_select_organisations_params.xml">
+]>
+
 <!--
  Licensed to the Apache Software Foundation (ASF) under one or more
  contributor license agreements.  See the NOTICE file distributed with
@@ -73,28 +77,21 @@
 
   <requestHandler name="/select_org" class="solr.StandardRequestHandler">
         <lst name="defaults">
-           <str name="defType">edismax</str>
-           <str name="rows">10</str>
-           <str name="qf">
- 		name_nostem^500 name^250 name_synonym^10 name_phonetic^5
-             	category_nostem^100 category_path^50 category_synonym^2 category_phonetic^1
-             	content_nostem^10 content^5 content_synonym^0.2 content_phonetic^0.1
-             	town^20
-	   </str>
-	  <str name="pf">
-                name_nostem^500 name^250 name_synonym^10 name_phonetic^5
-                category_nostem^100 category_path^50 category_synonym^2 categor$
-                content_nostem^10 content^5 content_synonym^0.2 content_phoneti$
-                town^20
-           </str>
-
+          &common_select_organisations_params;
            <str name="bf">recip(geodist(),2,200,20)^100</str>
-	   <str name="bq">has_mail_order_products:true^100</str>
+	         <str name="bq">has_mail_order_products:true^100</str>
            <str name="sfield">coordinate</str>
         </lst>
   </requestHandler>
 
-
+  <requestHandler name="/select_webtostore" class="solr.StandardRequestHandler">
+    <lst name="defaults">
+      &common_select_organisations_params;
+      <str name="sfield">coordinate</str>
+      <str name="fq">status:true</str>
+      <str name="boost">recip(geodist(),2,200,20)</str>
+    </lst>
+  </requestHandler>
 
   <!-- realtime get handler, guaranteed to return the latest stored fields 
     of any document, without the need to commit or open a new searcher. The current 
@@ -123,7 +120,13 @@
       <str name="echoParams">all</str>
     </lst>
   </requestHandler>
- 
+  
+  <requestHandler name="/dataimport" class="org.apache.solr.handler.dataimport.DataImportHandler">
+    <lst name="defaults">
+        <str name="config">db-data-config.xml</str>
+        <str name="clean">false</str>
+    </lst>
+  </requestHandler>
 
   <!-- config for the admin interface --> 
   <admin>
@@ -131,4 +134,3 @@
   </admin>
 
 </config>
-

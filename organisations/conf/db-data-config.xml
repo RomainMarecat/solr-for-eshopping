@@ -1,0 +1,100 @@
+<dataConfig>
+  <dataSource name="db" type="JdbcDataSource" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost/romainmarecat_symfony?characterEncoding=utf8" user="romainmarecat" password="romainmarecat" readonly="true" encoding="UTF-8"
+        URIEncoding="UTF-8"/>
+
+  <document name="organisations">
+    <entity dataSource="db" pk="s.idShop" transformer="RegexTransformer" name="organisation" query="
+        SELECT
+            s.idShop AS `id`,
+            s.name,
+            s.reference,
+            s.is_visible,
+            CONCAT(CONCAT(l.city, CONCAT(&quot; (&quot;, SUBSTRING(l.postcode, 1, 2))), &quot;)&quot;) AS town,
+            t.label as category,
+            n.label as navigation,
+            o.type,
+            CONCAT(&quot;{\&quot;route\&quot;:\&quot;shop_index\&quot;,\&quot;params\&quot;:{\&quot;slug\&quot;:\&quot;&quot;, s.slug, &quot;\&quot;}}&quot;) AS routing,
+            CONCAT(l.latitude, &quot;, &quot;, l.longitude) AS coordinate,
+            IF((SELECT COUNT(p.id) FROM product p WHERE p.organisation_id = s.idOrganisation AND p.is_visible = 1 AND p.available_for_mail_order) > 0, true, false) AS has_mail_order_products
+        FROM
+            shop_shop s
+            LEFT JOIN
+                organisation_organisation o
+                ON s.idOrganisation = o.idOrganisation
+            LEFT JOIN
+                util_location l
+                ON s.idLocation = l.idLocation
+            LEFT JOIN
+                shop_taxon st
+                ON s.idShop = st.idShop
+            LEFT JOIN
+                misc_taxon t
+                ON st.idTaxon = t.id
+            LEFT JOIN
+                navigations_taxons nt
+                ON t.id = nt.taxon_id
+            LEFT JOIN
+                navigation n
+                ON nt.navigation_id = n.id
+
+        ">
+        <!--
+            WHERE p.id = IF('${dataimporter.request.id}', '${dataimporter.request.id}', '%')
+            AND (p.updated_at + INTERVAL 2 MINUTE) >= IF('${dataimporter.request.updated_at}', '${dataimporter.request.updated_at}', 0) -->
+        <field column="id" name="id" />
+        <field column="name" name="name" />
+        <field column="reference" name="reference" />
+        <field column="is_visible" name="status" />
+        <field column="town" name="town"/>
+        <field column="category" name="category" splitBy=","/>
+        <field column="navigation" name="navigation" splitBy=","/>
+        <field column="type" name="type" />
+        <field column="routing" name="routing" />
+        <field column="coordinate" name="coordinate"/>
+        <field column="has_mail_order_products" name="has_mail_order_products"/>
+
+        <entity name="category" transformer="RegexTransformer" dataSource="db" pk="id" query="
+                SELECT
+                    CONCAT_WS(',', t1.id, t1.idParent) AS category_parent_ids,
+                    CONCAT_WS(',', t1.id, t1.idParent) AS source_category_parent_ids
+                FROM
+                    shop_taxon AS st1
+                    LEFT JOIN misc_taxon AS t1
+                        ON t1.id = st1.idTaxon
+                WHERE
+                    st1.idShop ='${organisation.id}'
+            ">
+            <field column="category_parent_ids" name="category_parent_ids" splitBy="," />
+            <field column="category_parent_ids" name="category_ids" splitBy="," />
+            <field column="category_parent_ids" name="category_path" splitBy="," />
+
+            <entity name="navigation" transformer="RegexTransformer" dataSource="db" pk="id" query="
+                    SELECT
+                        CONCAT_WS(',', n1.id, nt1.navigation_id, n1.parent_id) AS navigation_parent_ids,
+                        n1.parent_id as parent_id
+                    FROM
+                        navigations_taxons AS nt1
+                        LEFT JOIN navigation AS n1
+                            ON n1.id = nt1.navigation_id AND n1.lvl > 0
+                        LEFT JOIN shop_taxon AS st2
+                            ON st2.idShop = '${organisation.id}'
+                    WHERE
+                        nt1.taxon_id IN ( ${category.source_category_parent_ids} )
+                ">
+                <field column="navigation_parent_ids" name="navigation_parent_ids" splitBy="," />
+                <field column="navigation_parent_ids" name="navigation_ids" splitBy="," />
+                <field column="navigation_parent_ids" name="navigation_path" splitBy="," />
+                <!-- <entity name="navigation_n2" transformer="RegexTransformer" dataSource="db" pk="id" query="
+                    SELECT
+                        IF (json_parent_ids_parser(n2.parent_ids) != '', json_parent_ids_parser(n2.parent_ids), NULL) AS navigation_parent_ids
+                    FROM
+                        navigation n2
+                    WHERE
+                        n2.id = '${navigation.parent_id}' AND n2.lvl > 0">
+                    <field column="navigation_parent_ids" name="navigation_parent_ids" splitBy="," />
+                </entity> -->
+            </entity>
+        </entity>
+    </entity>
+  </document>
+</dataConfig>
