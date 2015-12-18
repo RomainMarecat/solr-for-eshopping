@@ -1,0 +1,19 @@
+<str name="defType">edismax</str>
+<str name="rows">20</str>
+<str name="fl">navigation_parent_ids</str>
+<str name="qf">
+     name_nostem^100 name^250
+     category_nostem^100 category^50
+     keywords^25
+     properties^20
+     content_nostem^10 content^5
+     brand_str^100
+</str>
+<str name="pf">
+     name_nostem^100 name^250
+     category_nostem^100 category^50
+     keywords^25
+     properties^20
+     content_nostem^10 content^5
+     brand_str^100
+</str>

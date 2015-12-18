@@ -5,7 +5,7 @@
   <document name="products">
     <entity dataSource="db" pk="p.id" transformer="RegexTransformer" name="product" query="
         SELECT
-            p.id as id, p.name, p.slug, CONCAT_WS(',', v.ean, p.keywords) as keywords, CONCAT_WS(',', v.value) as properties, br.name AS brand, v.ean, v.price,
+            p.id as id, p.name, p.slug, CONCAT_WS(',', v.ean, p.keywords) as keywords, CONCAT_WS(',', v2.value) as properties, br.name AS brand, v.ean, v.price,
             CONCAT(&quot;{\&quot;route\&quot;:\&quot;product_show\&quot;,\&quot;params\&quot;:{\&quot;slug\&quot;:\&quot;&quot;, p.slug, &quot;\&quot;}}&quot;) AS routing,
             v.sku AS reference,
             util_loc.city AS town,
@@ -30,10 +30,13 @@
             cat.id AS product_category_id
         FROM
             product AS p
-         INNER JOIN
+        LEFT JOIN
+            variant v
+            ON v.product_id = p.id
+        INNER JOIN
             (
             SELECT
-                v1.*, MIN(v1.price) minprice, GROUP_CONCAT(vp.value) as value
+                v1.product_id, MIN(v1.price) as minprice, GROUP_CONCAT(vp.value) as value
             FROM
                 variant AS v1
             LEFT JOIN
@@ -41,8 +44,8 @@
                 ON v1.id = vp.variant_id
             GROUP BY
                 v1.product_id
-        ) AS v
-            ON p.id = v.product_id AND v.price = minprice
+        ) AS v2
+            ON p.id = v2.product_id AND v2.minprice = v.price
         LEFT JOIN
             products_categories AS pc
             ON p.id = pc.product_id

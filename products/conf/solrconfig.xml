@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE schema [
         <!ENTITY common_select_products_params SYSTEM "common_select_products_params.xml">
+        <!ENTITY common_select_navigations_params SYSTEM "common_select_navigations_params.xml">
 ]>
 
 <!--
@@ -69,6 +70,15 @@
   <requestHandler name="/select_webtostore" class="solr.StandardRequestHandler">
     <lst name="defaults">
       &common_select_products_params;
+      <str name="sfield">coordinate</str>
+      <str name="fq">status:true</str>
+      <str name="boost">recip(geodist(),2,200,20)</str>
+    </lst>
+  </requestHandler>
+
+  <requestHandler name="/select_navigations" class="solr.StandardRequestHandler">
+    <lst name="defaults">
+      &common_select_navigations_params;
       <str name="sfield">coordinate</str>
       <str name="fq">status:true</str>
       <str name="boost">recip(geodist(),2,200,20)</str>
